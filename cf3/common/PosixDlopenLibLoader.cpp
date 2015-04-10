@@ -103,6 +103,11 @@ void PosixDlopenLibLoader::system_load_library(const std::string& lib)
   std::string filename = libpath.name();
   URI basepath = libpath.base_path();
 
+  // FIXME: The following fix is needed because dlopen() does not find
+  //        "./libname.so" in the default system library paths, yet
+  //        it DOES find "libname.so"!!
+  basepath = (basepath=="./"?"":basepath);
+
   std::string noext;
   std::string filewext;
 

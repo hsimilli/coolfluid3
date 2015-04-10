@@ -8,6 +8,9 @@ mark_as_advanced( CF3_LIBRARY_LINK_FLAGS )
 # gnu specific warning flags
 if( CMAKE_COMPILER_IS_GNUCC )
 
+    # gcc openmp
+    coolfluid_add_cxx_flags("-fopenmp")
+
     # use pipe for faster compilation
     coolfluid_add_c_flags("-pipe")
     coolfluid_add_cxx_flags("-pipe")
@@ -157,7 +160,7 @@ endif(WIN32)
 
 if( APPLE )
 
-	# improve the linker compiler to avoid unresolved symbols causing errors
+  # improve the linker compiler to avoid unresolved symbols causing errors
   # not needed anymore because all lib depencies are explicitly set
   #  set(CMAKE_CXX_CREATE_SHARED_LIBRARY
   #  "<CMAKE_CXX_COMPILER> -undefined dynamic_lookup <LANGUAGE_COMPILE_FLAGS> <CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS> <LINK_FLAGS> -o <TARGET> -install_name <TARGET_INSTALLNAME_DIR><TARGET_SONAME> <OBJECTS> <LINK_LIBRARIES>")

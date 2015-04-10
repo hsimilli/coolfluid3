@@ -41,6 +41,10 @@ Field::Field ( const std::string& name  ) :
   common::Table<Real> ( name ), m_var_type(ARRAY)
 {
   mark_basic();
+
+  properties()["brief"] = std::string("Mesh field");
+  properties()["description"] = std::string("Contains field values in the nodes of the parent Dictionary");
+
   properties()["date"] = boost::gregorian::to_iso_extended_string(boost::gregorian::day_clock::local_day());
   properties()["time"] = 0.;
   properties()["step"] = 0u;

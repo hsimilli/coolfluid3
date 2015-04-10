@@ -37,7 +37,7 @@
 #include "mesh/smurf/Reader.hpp"
 
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 namespace cf3 {
 namespace mesh {
@@ -49,7 +49,7 @@ namespace smurf {
 
 cf3::common::ComponentBuilder < smurf::Reader, MeshReader, LibSmurf> aSmurfReader_Builder;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 Reader::Reader( const std::string& name )
 : MeshReader(name),
@@ -85,7 +85,7 @@ Reader::Reader( const std::string& name )
   IO_rank = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 std::vector<std::string> Reader::get_extensions()
 {
@@ -94,7 +94,7 @@ std::vector<std::string> Reader::get_extensions()
   return extensions;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 void Reader::do_read_mesh_into(const URI& file, Mesh& mesh)
 {
@@ -124,7 +124,7 @@ void Reader::do_read_mesh_into(const URI& file, Mesh& mesh)
 
   CFdebug << "smurf: reading mesh \"" << title_ << "\"" << CFendl;
 
-  m_mesh_dimension = options().value<Uint>("dimension");
+  m_mesh_dimension = do_read_mesh_dimensions(vn_,options().value<Uint>("dimension"));
   std::vector< SmURF::TecZone > zheaders = mreader.readZoneHeaders();
 
   // data section
@@ -138,6 +138,7 @@ void Reader::do_read_mesh_into(const URI& file, Mesh& mesh)
     mreader.readZoneData(zone,ve,!i?m_vv:dump);
     if (dump.size())
       throw NotSupported(FromHere(), "Sorry! Only binary tecplot files with varsharelists are supported (i.e. all node data should be attributed to the first zone)");
+    ++i;  // (not used further in this scope)
 
     std::string cf_elem_name;
     // correct connectivity numbering
@@ -145,7 +146,7 @@ void Reader::do_read_mesh_into(const URI& file, Mesh& mesh)
 
       // collapse line segments to points
       if (ve[0][0]==ve[0][1]) {
-        cf_elem_name = "cf3.mesh.LagrangeP0.Point1D";
+        cf_elem_name = "cf3.mesh.LagrangeP0.Point"+Shared::dim_name[m_mesh_dimension];
         for (unsigned c=0; c<ve.size(); ++c) {
           ve[c].resize(1);
         }
@@ -196,7 +197,7 @@ void Reader::do_read_mesh_into(const URI& file, Mesh& mesh)
       }
     }
 
-    cf_elem_name = cf_elem_name==""?Shared::tp_name_to_cf_name(m_tp_elem_dim[zone.type], zone.type):cf_elem_name;
+    cf_elem_name = cf_elem_name==""? Shared::tp_name_to_cf_name(m_mesh_dimension, zone.type) : cf_elem_name;
 
     // Read variables
     CFdebug << "smurf: reading zone \"" << zone.title << "\"" << CFendl
@@ -204,8 +205,6 @@ void Reader::do_read_mesh_into(const URI& file, Mesh& mesh)
             << "       nodes: " << zone.i << CFendl
             << "       elems: " << zone.j << CFendl
             << "       etype: " << cf_elem_name << CFendl;
-
-    m_mesh_dimension = std::max(Shared::m_tp_elem_dim[zone.type],m_mesh_dimension);
 
     Handle<Region> region = create_region(zone.title);
 
@@ -230,12 +229,9 @@ void Reader::do_read_mesh_into(const URI& file, Mesh& mesh)
     for (int i=0; i<ve.size(); ++i)
       for (int j=0; j<ve[i].size(); ++j)
         elem_table[i][j] = ve[i][j];
-    ++i;
   }
 
-  m_total_nb_nodes = m_vv[0].size();
-
-  CFdebug << "smurf: nb_nodes : " << m_total_nb_nodes << CFendl
+  CFdebug << "smurf: nb_nodes : " << m_vv[0].size() << CFendl
           << "       dimension: " << Shared::dim_name[m_mesh_dimension] << CFendl;
 
   cf3_assert(is_not_null(m_mesh));
@@ -265,6 +261,28 @@ void Reader::do_read_mesh_into(const URI& file, Mesh& mesh)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+Uint Reader::do_read_mesh_dimensions(
+    const std::vector< std::string >& vnames,
+    const Uint &optdim ) const
+{
+  if (optdim)
+    return optdim;
+
+  // detect number of dimensions based on variable names: the last character of
+  // the first variable names have to be consecutive
+  std::string trail(3,'?');
+  for (unsigned i=0; i<3 && i<vnames.size(); ++i)
+    if (vnames[i].length())
+      trail[i] = *(vnames[i].end()-1);
+
+  Uint d(trail[0]!='?'? 1:0);
+  if (d==1 && trail[1]==trail[0]+1)  d=2;
+  if (d==2 && trail[2]==trail[0]+2)  d=3;
+  return d;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 Handle< Region > Reader::create_region(std::string const& relative_path)
 {
   typedef boost::tokenizer<boost::char_separator<char> > Tokenizer;
@@ -282,7 +300,7 @@ Handle< Region > Reader::create_region(std::string const& relative_path)
   return region;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 void Reader::fix_negative_volumes(Mesh& mesh)
 {
@@ -320,8 +338,9 @@ void Reader::fix_negative_volumes(Mesh& mesh)
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 } // smurf
 } // mesh
 } // cf3
+

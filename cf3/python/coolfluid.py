@@ -32,3 +32,24 @@ libs = Core.libraries()
 # shortcut for tools
 tools = Core.tools()
 
+def interactive(banner="INTERACTIVE MODE - Use Ctrl-D to continue or exit() to exit"):
+  """provides an interactive python shell when called in a script
+  """
+  import readline, code, sys, time
+  # use exception trick to pick up the current frame
+  try:
+    raise None
+  except:
+    frame = sys.exc_info()[2].tb_frame.f_back
+
+  # evaluate commands in current namespace
+  namespace = frame.f_globals.copy()
+  namespace.update(frame.f_locals)
+
+  try:
+    class_name = frame.f_locals['self'].__class__.__name__
+    banner += "\nnote: keyboard() was called from within class \"" + class_name + "\"\n      use help("+class_name+") for more information on this class"
+  except KeyError:
+    class_name = None
+
+  code.interact(banner="\n[%02d:%02d] " % (time.localtime().tm_hour, time.localtime().tm_min)+banner, local=namespace)

@@ -11,5 +11,4 @@ source_group( Headers FILES ${BOOST_QUADRATURE_FIND_FILES} )
 
 # install boost headers
 install( FILES ${BOOST_QUADRATURE_FIND_FILES}
-DESTINATION
-${CF_INSTALL_INCLUDE_DIR}/boost )
+         DESTINATION ${CF3_INSTALL_INCLUDE_DIR}/boost )

@@ -97,13 +97,14 @@ coolfluid_add_test( PTEST     ptest-proto-parallel
 else()
 coolfluid_mark_not_orphan(
   ptest-proto-benchmark.cpp
-  utest-proto-nodeloop.cpp
-  utest-proto-operators.cpp
-  utest-proto-internals.cpp
+  ptest-proto-parallel.cpp
   utest-proto-components.cpp
   utest-proto-elements.cpp
+  utest-proto-internals.cpp
   ptest-proto-parallel.cpp
   utest-proto-lagrangep2.cpp
   utest-proto-lss.cpp
+  utest-proto-nodeloop.cpp
+  utest-proto-operators.cpp
 )
 endif()

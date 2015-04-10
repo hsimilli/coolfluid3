@@ -49,5 +49,9 @@ if( CF3_HAVE_PYTHON )
     configure_file( coolfluid.py      ${CF3_DSO_DIR} COPYONLY )
     configure_file( networkxpython.py ${CF3_DSO_DIR} COPYONLY )
     configure_file( check.py          ${CF3_DSO_DIR} COPYONLY )
+    
+    install(FILES coolfluid.py      DESTINATION ${CF3_INSTALL_LIB_DIR})
+    install(FILES networkxpython.py DESTINATION ${CF3_INSTALL_LIB_DIR})
+    install(FILES check.py          DESTINATION ${CF3_INSTALL_LIB_DIR})
 
 endif()

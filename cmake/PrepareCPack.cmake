@@ -40,10 +40,10 @@ if(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
       # COMPONENT libraries
       # FILES_MATCHING REGEX "^.*\\.(so|dylib|dll)$")
 
-      foreach( DEP_LIB ${CF3_DEPS_LIBRARIES} )
+      #foreach( DEP_LIB ${CF3_DEPS_LIBRARIES} )
       #  coolfluid_log (" +++ installing ${DEP_LIB}")
-        coolfluid_install_third_party_library( ${DEP_LIB} )
-      endforeach()
+      #  coolfluid_install_third_party_library( ${DEP_LIB} )
+      #endforeach()
 
       #foreach ( CF3_QT_LIB ${QT_LIBRARIES} )
       #  coolfluid_log (" +++ installing ${CF3_QT_LIB}")

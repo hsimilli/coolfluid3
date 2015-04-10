@@ -25,6 +25,7 @@ ComponentBuilder<MeshMetadata, Component, LibMesh> MeshMetadata_Builder;
 MeshMetadata::MeshMetadata(const std::string& name) :
   common::Component(name)
 {
+  mark_basic();
   // get the day of today
   properties()["date"] = boost::gregorian::to_iso_extended_string(boost::gregorian::day_clock::local_day());
   // to convert back:
