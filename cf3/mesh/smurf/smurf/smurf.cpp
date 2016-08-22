@@ -93,7 +93,7 @@ MeshWriter::~MeshWriter()
 }
 
 
-void MeshWriter::writeMainHeader(const string& htitle, const vector< string >& vnames)
+void MeshWriter::writeMainHeader(const std::string& htitle, const vector< string >& vnames)
 {
   m_nvars = (unsigned) vnames.size();
 
@@ -263,7 +263,7 @@ void MeshWriter::writeZoneData(
 // ------------------------------------------------------------------------ //
 // MeshReader
 
-MeshReader::MeshReader(const string& fname)
+MeshReader::MeshReader(const std::string& fname)
 {
   m_file.open(fname.c_str(),ios::binary);
   if (!m_file) {

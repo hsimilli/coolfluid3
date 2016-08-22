@@ -16,6 +16,8 @@ from check import *
 # restore the dlopen flags to default
 sys.setdlopenflags(flags)
 
+import atexit
+
 #initiate the CF3 environment. Note: there is no argv if executed from the ScriptEngine
 if sys.__dict__.has_key('argv'):
   Core.initiate(sys.argv)

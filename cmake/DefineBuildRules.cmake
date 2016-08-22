@@ -1,6 +1,9 @@
 set( CF3_LIBRARY_LINK_FLAGS "" CACHE STRING "Extra link flags for libraries" FORCE )
 mark_as_advanced( CF3_LIBRARY_LINK_FLAGS )
 
+# Switch on C++11
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -DCF3_CXX_MANUAL_NATIVE_NULLPTR")
+
 ########################################################################################
 # GCC Compiler
 ########################################################################################
@@ -17,8 +20,7 @@ if( CMAKE_COMPILER_IS_GNUCC )
 
     # respect c 89 standard (same as -std=c89)
     coolfluid_add_c_flags("-ansi")
-    # respect c++ 98 standard
-    coolfluid_add_cxx_flags("-std=c++98")
+    
     # dont allow gnu extensions
     coolfluid_add_cxx_flags("-fno-gnu-keywords")
 
@@ -202,4 +204,3 @@ if( NOT CF3_SKIP_FORTRAN )
   # endforeach()
   mark_as_advanced( Fortran_FLAGS_LISTS )
 endif()
-
